@@ -9,7 +9,7 @@ require 'json/schema_dsl/types'
 require 'json/schema_dsl/entity'
 require 'json/schema_dsl/monads'
 
-%w[null numeric integer string object monads].each do |type|
+%w[null boolean numeric integer string object array monads].each do |type|
   require "json/schema_dsl/#{type}"
 end
 

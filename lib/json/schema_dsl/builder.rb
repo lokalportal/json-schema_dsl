@@ -19,7 +19,7 @@ module JSON
         end
 
         def inspect
-          "#<JSON::SchemaDsl::Builder inner_class=#{inner_class}>"
+          "#<#{name} inner_class=#{inner_class}>"
         end
 
         private
@@ -35,10 +35,12 @@ module JSON
           definition = proc do
             self.inner_class = klass
 
-            klass.schema.keys.map(&:name).each do |name|
-              define_method(name) do |*args|
-                return inner.send(name) if args.empty?
+            klass.schema.keys.each do |key|
+              name = key.name
+              define_method(name) do |*args, **opts, &block|
+                return inner.send(name) if args.empty? && opts.empty? && block.nil?
 
+                args = build_struct(Entity, **opts, &block) if opts.present? || !block.nil?
                 @inner = update(name, args)
               end
             end
@@ -62,11 +64,15 @@ module JSON
         @inner = inner.update(type, *args)
       end
 
+      def build_struct(type, name = nil, **attributes, &block)
+        builder = self.class[type]
+        builder.build(name, **attributes, &block).inner
+      end
+
       JSON::SchemaDsl::Entity.descendants.each do |type|
-        builder = self[type]
         type_param = type.infer_type.downcase
         define_method(type_param) do |name = nil, **attributes, &block|
-          new_child = builder.build(name, **attributes, &block).inner
+          new_child = build_struct(type, name, **attributes, &block)
           children(children | [new_child])
           new_child
         end

@@ -39,6 +39,7 @@ module JSON
       def render
         ::JSON::SchemaDsl::Renderer.new(self).render
       end
+      alias as_json render
     end
   end
 end

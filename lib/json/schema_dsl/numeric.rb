@@ -7,5 +7,8 @@ module JSON
       attribute?(:exclusive_minimum, Types::Integer)
       attribute?(:exclusive_maximum, Types::Integer)
     end
+
+    class Number < Numeric
+    end
   end
 end

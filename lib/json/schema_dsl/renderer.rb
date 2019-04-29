@@ -58,7 +58,7 @@ module JSON
       end
 
       def replacement_attributes
-        required_attributes.merge(properties_attributes)
+        required_attributes.merge(properties_attributes).merge(items_attributes)
       end
 
       def nullable_attributes
@@ -68,6 +68,13 @@ module JSON
           nullable: nil,
           any_of: entity[:any_of].push(JSON::SchemaDsl::Null.new(type: 'null'))
         }
+      end
+
+      def items_attributes
+        return {} unless entity[:type] == 'array'
+
+        { items: self.class.render(entity[:items].to_h
+                     .merge(entity[:items][:children].first.to_h)) }
       end
 
       def properties_attributes
