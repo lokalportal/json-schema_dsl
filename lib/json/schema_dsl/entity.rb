@@ -21,7 +21,7 @@ module JSON
       attribute(:any_of,   Types::Coercible::Array.default { [] })
       attribute(:one_of,   Types::Coercible::Array.default { [] })
       attribute(:children, Types::Coercible::Array.default { [] })
-      attribute(:nullable, Types::Bool.default(false))
+      attribute?(:nullable,    Types::Bool.default(false))
       attribute?(:name,        (Types.Instance(Regexp) | Types::Coercible::String))
       attribute?(:type,        Types::Coercible::String)
       attribute?(:title,       Types::Coercible::String)
@@ -32,11 +32,7 @@ module JSON
       attribute?(:ref,         Types::String)
       attribute?(:definitions, Types::String)
 
-      def infer_type!
-        update(type: self.class.infer_type)
-      end
-
-      def update(attribute_name, value)
+      def update(attribute_name, value = nil)
         self.class.new(to_h.merge(attribute_name => value))
       end
 
