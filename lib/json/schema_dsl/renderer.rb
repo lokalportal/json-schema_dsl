@@ -18,6 +18,7 @@ module JSON
 
       def render
         entity
+          .merge(nullable_attributes)
           .yield_self { |h| collection_monad(h) }
           .fmap { |inner| inner.merge(replacement_attributes) }
           .fmap { |inner| apply_key_transformations(inner) }
@@ -57,9 +58,7 @@ module JSON
       end
 
       def replacement_attributes
-        nullable_attributes
-          .merge(required_attributes)
-          .merge(properties_attributes)
+        required_attributes.merge(properties_attributes)
       end
 
       def nullable_attributes
@@ -67,7 +66,7 @@ module JSON
 
         {
           nullable: nil,
-          any_of: entity[:any_of] + [Null.new.infer_type!]
+          any_of: entity[:any_of].push(JSON::SchemaDsl::Null.new(type: 'null'))
         }
       end
 
