@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JSON
   module SchemaDsl
     JSON::SchemaDsl::Entity.descendants.push(JSON::SchemaDsl::Entity).each do |type|

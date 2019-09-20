@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/core_ext/string'
 require 'active_support/core_ext/object'
 require 'docile'
@@ -7,9 +9,8 @@ require 'dry-types'
 require 'json/schema_dsl/version'
 require 'json/schema_dsl/types'
 require 'json/schema_dsl/entity'
-require 'json/schema_dsl/monads'
 
-%w[null boolean numeric integer string object array monads].each do |type|
+%w[null boolean numeric integer string object array].each do |type|
   require "json/schema_dsl/#{type}"
 end
 

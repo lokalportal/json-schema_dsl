@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JSON
   module SchemaDsl
     class Entity < Dry::Struct
@@ -31,6 +33,17 @@ module JSON
       attribute?(:not_a,       Types::String)
       attribute?(:ref,         Types::String)
       attribute?(:definitions, Types::String)
+
+      def to_h
+        super.transform_values do |v|
+          is_array = v.respond_to?(:each)
+          if (is_array ? v.first : v).respond_to?(:to_h)
+            is_array ? v.map(&:to_h) : v.to_h
+          else
+            v
+          end
+        end
+      end
 
       def update(attribute_name, value = nil)
         self.class.new(to_h.merge(attribute_name => value))

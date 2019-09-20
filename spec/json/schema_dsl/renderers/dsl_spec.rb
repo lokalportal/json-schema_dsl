@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-describe Json::SchemaDsl do
+describe JSON::SchemaDsl do
   include JSON::SchemaDsl
 
   subject do
@@ -15,6 +13,3 @@ describe Json::SchemaDsl do
       end
     end
   end
-
-  it { binding.pry }
-end

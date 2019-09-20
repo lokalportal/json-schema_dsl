@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JSON
   module SchemaDsl
     class Builder
@@ -14,7 +16,7 @@ module JSON
 
         def build(name = nil, **attributes, &block)
           defaults = { name: name, type: inner_class.infer_type }
-          builder = new(inner_class.new(defaults))
+          builder  = new(inner_class.new(defaults))
           Docile.dsl_eval(builder, &config_block(attributes, &block))
         end
 
@@ -40,7 +42,7 @@ module JSON
               define_method(name) do |*args, **opts, &block|
                 return inner.send(name) if args.empty? && opts.empty? && block.nil?
 
-                args = build_struct(Entity, **opts, &block) if opts.present? || !block.nil?
+                args = build_struct(Object, **opts, &block) if opts.present? || !block.nil?
                 @inner = update(name, args)
               end
             end
@@ -50,13 +52,10 @@ module JSON
       end
 
       attr_reader :inner
+      delegate :as_json, :to_h, :render, to: :inner
 
       def initialize(inner)
         @inner = inner
-      end
-
-      def render
-        inner.render
       end
 
       def update(type, *args)
@@ -65,12 +64,12 @@ module JSON
       end
 
       def build_struct(type, name = nil, **attributes, &block)
-        builder = self.class[type]
-        builder.build(name, **attributes, &block).inner
+        builder = self.class[type || attributes[:type].constantize]
+        builder.build(name, **attributes, &block)
       end
 
-      JSON::SchemaDsl::Entity.descendants.each do |type|
-        type_param = type.infer_type.downcase
+      JSON::SchemaDsl::Entity.descendants.push(JSON::SchemaDsl::Entity).each do |type|
+        type_param = type.infer_type || 'entity'
         define_method(type_param) do |name = nil, **attributes, &block|
           new_child = build_struct(type, name, **attributes, &block)
           children(children | [new_child])
