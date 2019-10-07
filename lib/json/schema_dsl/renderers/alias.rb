@@ -24,10 +24,10 @@ module JSON
 
           def traverse(entity)
             entity.map do |key, value|
-              if key.to_s.match?(/properties$/i)
+              if key.to_s.match?(/properties$/i) && value.is_a?(Hash)
                 [key, value.transform_values { |v| visit(v) }]
               else
-                [key, super(value)]
+                [key, step(value)]
               end
             end.to_h
           end

@@ -15,25 +15,26 @@ describe 'Array of any ofs' do
   end
   let(:expected_json) do
     {
-      type: :object,
+      type: 'object',
       properties: {
         an_array: {
-          type: :array,
+          type: 'array',
           items: {
+            type: 'entity',
             anyOf: [
               {
-                type: :object,
+                type: 'object',
                 properties: {
                   a_string: {
-                    type: :string
+                    type: 'string'
                   }
                 }
               },
               {
-                type: :object,
+                type: 'object',
                 properties: {
                   a_number: {
-                    type: :number
+                    type: 'number'
                   }
                 }
               }

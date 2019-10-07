@@ -21,7 +21,7 @@ module JSON
 
           def properties_properties(entity)
             entity[:children]
-              .map { |ch| ch[:name] }
+              .map { |ch| ch[:name].to_sym }
               .zip(entity[:children].map { |c| visit(c) })
               .map(&unrequire_property)
               .group_by { |(name, _obj)| name.class }
