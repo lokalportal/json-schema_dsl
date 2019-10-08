@@ -5,10 +5,12 @@ describe JSON::SchemaDsl::Renderers::Desugar do
     subject { described_class.visit(input) }
 
     context 'it desugars nullable' do
-      let(:input) { { nullable: true } }
+      let(:input) { { type: :string, nullable: true } }
 
       it { is_expected.to include(any_of: [{ type: 'null' }]) }
       it { is_expected.to include(nullable: nil) }
+      it { is_expected.to include(type: :string) }
+      it { is_expected.to include(type: :string, any_of: [{ type: 'null' }]) }
 
       context 'even if there are already any_of options' do
         let(:input) { { nullable: true, any_of: [{ type: 'string' }] } }
