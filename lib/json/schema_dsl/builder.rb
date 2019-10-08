@@ -29,7 +29,7 @@ module JSON
         def config_block(attributes, &block)
           proc do
             attributes.each { |k, v| send(k, v) }
-            instance_eval(&block) if block_given?
+            instance_exec(&block) if block_given?
           end
         end
 
