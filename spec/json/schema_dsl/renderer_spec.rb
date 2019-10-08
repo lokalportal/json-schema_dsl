@@ -8,7 +8,7 @@ describe JSON::SchemaDsl::Renderer do
 
     shared_examples 'as a nullable entity' do
       %i[null nullable].each do |key|
-        let(:input) { super().merge(key => true) }
+        let(:input) { super().to_h.merge(key => true) }
         let(:any_of) { subject[:anyOf] }
 
         it { expect(any_of).to include(type: 'null') }
@@ -45,7 +45,7 @@ describe JSON::SchemaDsl::Renderer do
       it_behaves_like 'as a nullable entity'
 
       it 'is rendered correctly' do
-        is_expected.to eq(expected)
+        expect(subject.as_json).to eq(expected.as_json)
       end
     end
 

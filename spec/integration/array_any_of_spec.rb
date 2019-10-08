@@ -46,6 +46,6 @@ describe 'Array of any ofs' do
   end
 
   it 'matches' do
-    expect(subject.render).to eq(expected_json)
+    expect(subject.render.as_json).to eq(expected_json.as_json)
   end
 end
