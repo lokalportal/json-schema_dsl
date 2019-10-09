@@ -26,7 +26,7 @@ module JSON
           def container?(entity)
             cleaned_up = Renderers::Filter.visit(entity)
 
-            cleaned_up[:type].to_s == 'object' && cleaned_up.keys.count == 1
+            cleaned_up[:type].to_s == 'object' && cleaned_up.keys.count <= 1
           end
         end
       end

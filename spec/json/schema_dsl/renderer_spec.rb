@@ -121,5 +121,30 @@ describe JSON::SchemaDsl::Renderer do
         expect(subject.as_json).to eq(expected.as_json)
       end
     end
+
+    context 'with a multiplexed item field' do
+      let(:input2) do
+        object additional_properties: false do
+          array :objects do
+            items do
+              any_of(%w[foo bar baz].map { |w| object { string :name, enum: [w] } })
+            end
+          end
+        end
+      end
+
+
+      let(:input) do
+        object do
+          array :cars do
+            items do
+              object additional_properties: false do
+                string :jeff
+              end
+            end
+          end
+        end
+      end
+    end
   end
 end

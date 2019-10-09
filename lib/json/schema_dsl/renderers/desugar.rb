@@ -13,10 +13,17 @@ module JSON
 
           def expand_children(entity)
             return entity unless entity[:children]
+            return collapse_items(entity) if entity[:items]
 
             entity
               .merge(required_properties(entity))
               .merge(properties_properties(entity))
+          end
+
+          def collapse_items(entity)
+            items = entity[:items]
+            items = items[:children].first if items[:children].to_a.count == 1
+            entity.merge(items: items)
           end
 
           def properties_properties(entity)
