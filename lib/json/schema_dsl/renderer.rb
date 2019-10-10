@@ -24,7 +24,7 @@ module JSON
       private
 
       def render_chain
-        [Renderers::Desugar, Renderers::Multiplexer, Renderers::Alias, Renderers::Filter]
+        ::JSON::SchemaDsl.registered_renderers
       end
     end
   end
