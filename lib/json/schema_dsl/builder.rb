@@ -66,13 +66,16 @@ module JSON
 
       def build_struct(type, name = nil, **attributes, &block)
         builder = self.class[type || attributes[:type].constantize]
-        builder.build(name, **attributes, scope: self, &block)
+        builder.build(name, **attributes, scope: @scope, &block)
       end
 
       def method_missing(meth, *args, &block)
         return super unless @scope&.respond_to?(meth, true)
 
-        @scope.send(meth, *args, &block)
+        maybe_child = @scope.send(meth, *args, &block)
+        maybe_child.is_a?(::JSON::SchemaDsl::Builder) &&
+          add_child(maybe_child)
+        maybe_child
       end
 
       def respond_to_missing?(meth, _priv)
@@ -81,12 +84,16 @@ module JSON
         @scope.respond_to?(meth, true)
       end
 
+      def add_child(child)
+        children(children | [child])
+        child
+      end
+
       JSON::SchemaDsl::Entity.descendants.push(JSON::SchemaDsl::Entity).each do |type|
         type_param = type.infer_type || 'entity'
         define_method(type_param) do |name = nil, **attributes, &block|
           new_child = build_struct(type, name, **attributes, &block)
-          children(children | [new_child])
-          new_child
+          add_child(new_child)
         end
       end
     end
