@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe 'Array of any ofs' do
   include JSON::SchemaDsl
 

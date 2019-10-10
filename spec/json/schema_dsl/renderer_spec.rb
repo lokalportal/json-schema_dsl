@@ -17,7 +17,6 @@ describe JSON::SchemaDsl::Renderer do
     end
 
     context 'given a complex object' do
-
       let(:input) do
         object :jeff do
           string :james_name, nullable: true, required: true
@@ -132,7 +131,6 @@ describe JSON::SchemaDsl::Renderer do
           end
         end
       end
-
 
       let(:input) do
         object do

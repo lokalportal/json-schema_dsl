@@ -13,7 +13,7 @@ describe JSON::SchemaDsl::Renderers::Filter do
     context 'when there are children' do
       let(:input) { { type: :object, properties: properties, children: children } }
       let(:properties) { { 'james' => { type: :string } } }
-      let(:children) { [{type: :string, name: 'james'}] }
+      let(:children) { [{ type: :string, name: 'james' }] }
 
       it { expect(subject[:children]).to be_nil }
       it { expect(subject[:properties]).to eq(properties) }
