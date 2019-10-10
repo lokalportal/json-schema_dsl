@@ -14,14 +14,28 @@ module JSON
           @registered_builders ||= {}
         end
 
+        def type_defaults
+          @type_defaults ||= Hash.new { {} }
+        end
+
+        def reset_type_defaults!
+          type_defaults.clear
+        end
+
+        def add_defaults_for(type, defaults)
+          type_defaults[type].merge!(defaults)
+        end
+
         def build(name = nil, scope: nil, **attributes, &block)
-          defaults = { name: name, type: inner_class.infer_type }
+          type     = (attributes[:type] || inner_class.infer_type).to_sym
+          defaults = ::JSON::SchemaDsl::Builder
+                     .type_defaults[type].merge(name: name, type: type)
           builder  = new(inner_class.new(defaults), scope: scope)
           Docile.dsl_eval(builder, &config_block(attributes, &block))
         end
 
         def inspect
-          "#<#{name} inner_class=#{inner_class}>"
+          "#<#{name || inner_class.name + 'Builder'} inner_class=#{inner_class}>"
         end
 
         private
@@ -78,10 +92,10 @@ module JSON
         maybe_child
       end
 
-      def respond_to_missing?(meth, _priv)
+      def respond_to_missing?(meth, priv)
         return super unless @scope
 
-        @scope.respond_to?(meth, true)
+        @scope.respond_to?(meth, priv)
       end
 
       def add_child(child)
