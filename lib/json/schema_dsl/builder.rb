@@ -27,7 +27,7 @@ module JSON
         end
 
         def build(name = nil, scope: nil, **attributes, &block)
-          type     = (attributes[:type] || inner_class.infer_type).to_sym
+          type     = (attributes[:type] || inner_class.infer_type)&.to_sym
           defaults = ::JSON::SchemaDsl::Builder
                      .type_defaults[type].merge(name: name, type: type)
           builder  = new(inner_class.new(defaults), scope: scope)
@@ -36,6 +36,14 @@ module JSON
 
         def inspect
           "#<#{name || inner_class.name + 'Builder'} inner_class=#{inner_class}>"
+        end
+
+        def define_builder_method(type)
+          type_param = type.type_method_name || 'entity'
+          define_method(type_param) do |name = nil, **attributes, &block|
+            new_child = build_struct(type, name, **attributes, &block)
+            add_child(new_child)
+          end
         end
 
         private
@@ -101,14 +109,6 @@ module JSON
       def add_child(child)
         children(children | [child])
         child
-      end
-
-      JSON::SchemaDsl::Entity.descendants.push(JSON::SchemaDsl::Entity).each do |type|
-        type_param = type.infer_type || 'entity'
-        define_method(type_param) do |name = nil, **attributes, &block|
-          new_child = build_struct(type, name, **attributes, &block)
-          add_child(new_child)
-        end
       end
     end
   end

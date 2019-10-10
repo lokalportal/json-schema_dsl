@@ -29,14 +29,29 @@ module JSON
                :add_defaults_for,
                to: ::JSON::SchemaDsl::Builder)
 
-      DEFAULT_TYPES = JSON::SchemaDsl::Entity.descendants.dup.push(JSON::SchemaDsl::Entity).freeze
+      DEFAULT_TYPES = JSON::SchemaDsl::Entity
+                      .descendants.dup.push(JSON::SchemaDsl::Entity).freeze
+      DEFAULT_RENDERERS = [Renderers::Desugar,
+                           Renderers::Multiplexer,
+                           Renderers::Alias,
+                           Renderers::Filter].freeze
+
+      attr_writer :registered_renderers
+
+      def registered_renderers
+        @registered_renderers ||= DEFAULT_RENDERERS.dup
+      end
+
+      def reset_registered_renderers!
+        @registered_renderers = DEFAULT_RENDERERS.dup
+      end
 
       def registered_types
         @registered_types ||= DEFAULT_TYPES.dup
       end
 
       def register_type(type)
-        registered_types.push(type).tap { define_type_method(type) }
+        registered_types.push(type).tap { define_type_methods(type) }
       end
 
       def reset_schema_dsl!
@@ -47,10 +62,11 @@ module JSON
       end
 
       def define_schema_dsl!
-        registered_types.map { |t| define_type_method(t) }
+        registered_types.map { |t| define_type_methods(t) }
       end
 
-      def define_type_method(type)
+      def define_type_methods(type)
+        JSON::SchemaDsl::Builder.define_builder_method(type)
         builder = JSON::SchemaDsl::Builder[type]
         define_method(type_method_name(type)) do |name = nil, **attributes, &block|
           builder.build(name, **attributes, scope: self, &block)
