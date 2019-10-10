@@ -17,7 +17,6 @@ end
 
 require 'json/schema_dsl/builder'
 require 'json/schema_dsl/renderer'
-require 'json/schema_dsl/dsl'
 
 module JSON
   module SchemaDsl
