@@ -8,6 +8,7 @@ module JSON
           type = name.split('::').last.underscore
           type == 'entity' ? nil : type
         end
+        alias type_method_name infer_type
 
         def self_type
           Types.Constructor(self)
