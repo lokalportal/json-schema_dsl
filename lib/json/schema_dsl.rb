@@ -21,6 +21,10 @@ require 'json/schema_dsl/dsl'
 module JSON
   module SchemaDsl
     class Error < StandardError; end
-    # Your code goes here...
+
+    delegate(:type_defaults,
+             :reset_type_defaults!,
+             :add_defaults_for,
+             to: ::JSON::SchemaDsl::Builder)
   end
 end
