@@ -14,9 +14,9 @@ module JSON
           @registered_builders ||= {}
         end
 
-        def build(name = nil, **attributes, &block)
+        def build(name = nil, scope: nil, **attributes, &block)
           defaults = { name: name, type: inner_class.infer_type }
-          builder  = new(inner_class.new(defaults))
+          builder  = new(inner_class.new(defaults), scope: scope)
           Docile.dsl_eval(builder, &config_block(attributes, &block))
         end
 
@@ -54,8 +54,9 @@ module JSON
       attr_reader :inner
       delegate :as_json, :to_h, :render, to: :inner
 
-      def initialize(inner)
+      def initialize(inner, scope: nil)
         @inner = inner
+        @scope = scope
       end
 
       def update(type, *args)
@@ -65,7 +66,19 @@ module JSON
 
       def build_struct(type, name = nil, **attributes, &block)
         builder = self.class[type || attributes[:type].constantize]
-        builder.build(name, **attributes, &block)
+        builder.build(name, **attributes, scope: self, &block)
+      end
+
+      def method_missing(meth, *args, &block)
+        return super unless @scope&.respond_to?(meth, true)
+
+        @scope.send(meth, *args, &block)
+      end
+
+      def respond_to_missing?(meth, _priv)
+        return super unless @scope
+
+        @scope.respond_to?(meth, true)
       end
 
       JSON::SchemaDsl::Entity.descendants.push(JSON::SchemaDsl::Entity).each do |type|

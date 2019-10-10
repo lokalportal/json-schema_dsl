@@ -6,7 +6,7 @@ module JSON
       builder = JSON::SchemaDsl::Builder[type]
       type_param = type.infer_type || 'entity'
       define_method(type_param) do |name = nil, **attributes, &block|
-        builder.build(name, attributes, &block)
+        builder.build(name, **attributes, scope: self, &block)
       end
     end
   end
