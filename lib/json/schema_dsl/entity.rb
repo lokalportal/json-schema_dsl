@@ -17,6 +17,10 @@ module JSON
         def required_type
           (Types::Bool | Types::Coercible::Array.of(Types::Coercible::String).default { [] })
         end
+
+        def builder
+          ::JSON::SchemaDsl::Builder.define_builder(self)
+        end
       end
 
       attribute(:enum,     Types::Coercible::Array.default { [] })

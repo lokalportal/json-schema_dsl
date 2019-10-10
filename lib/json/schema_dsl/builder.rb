@@ -7,7 +7,7 @@ module JSON
         attr_accessor :inner_class
 
         def [](klass)
-          registered_builders[klass] ||= define_builder(klass)
+          registered_builders[klass] ||= klass.builder
         end
 
         def registered_builders
@@ -46,6 +46,17 @@ module JSON
           end
         end
 
+        def define_builder(klass)
+          Class.new(self) do
+            self.inner_class = klass
+            klass.schema.keys.map(&:name).each do |name|
+              define_method(name) do |*args, **opts, &block|
+                set(name, *args, **opts, &block)
+              end
+            end
+          end
+        end
+
         private
 
         def config_block(attributes, &block)
@@ -53,23 +64,6 @@ module JSON
             attributes.each { |k, v| send(k, v) }
             instance_exec(&block) if block_given?
           end
-        end
-
-        def define_builder(klass)
-          definition = proc do
-            self.inner_class = klass
-
-            klass.schema.keys.each do |key|
-              name = key.name
-              define_method(name) do |*args, **opts, &block|
-                return inner.send(name) if args.empty? && opts.empty? && block.nil?
-
-                args = build_struct(Object, **opts, &block) if opts.present? || !block.nil?
-                @inner = update(name, args)
-              end
-            end
-          end
-          Class.new(self, &definition)
         end
       end
 
@@ -104,6 +98,13 @@ module JSON
         return super unless @scope
 
         @scope.respond_to?(meth, priv)
+      end
+
+      def set(name, *args, **opts, &block)
+        return inner.send(name) if args.empty? && opts.empty? && block.nil?
+
+        args = build_struct(Object, **opts, &block) if opts.present? || !block.nil?
+        @inner = update(name, args)
       end
 
       def add_child(child)
