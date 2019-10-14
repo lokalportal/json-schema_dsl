@@ -35,7 +35,11 @@ module JSON
         end
 
         def inspect
-          "#<#{name || inner_class.name + 'Builder'} inner_class=#{inner_class}>"
+          "#<#{class_name} inner_class=#{inner_class}>"
+        end
+
+        def class_name
+          name || inner_class.name + 'Builder'
         end
 
         def define_builder_method(type)
@@ -67,12 +71,17 @@ module JSON
         end
       end
 
-      attr_reader :inner
-      delegate :as_json, :to_h, :render, to: :inner
+      attr_reader :inner, :scope
+      delegate :as_json, to: :render
+      delegate :to_h, to: :inner
 
       def initialize(inner, scope: nil)
         @inner = inner
         @scope = scope
+      end
+
+      def render
+        ::JSON::SchemaDsl::Renderer.new(inner, scope).render
       end
 
       def update(type, *args)
@@ -82,22 +91,26 @@ module JSON
 
       def build_struct(type, name = nil, **attributes, &block)
         builder = self.class[type || attributes[:type].constantize]
-        builder.build(name, **attributes, scope: @scope, &block)
+        builder.build(name, **attributes, scope: scope, &block)
       end
 
       def method_missing(meth, *args, &block)
-        return super unless @scope&.respond_to?(meth, true)
+        return super unless scope&.respond_to?(meth, true)
 
-        maybe_child = @scope.send(meth, *args, &block)
-        maybe_child.is_a?(::JSON::SchemaDsl::Builder) &&
+        maybe_child = scope.send(meth, *args, &block)
+        maybe_child.respond_to?(:render) &&
           add_child(maybe_child)
         maybe_child
       end
 
       def respond_to_missing?(meth, priv)
-        return super unless @scope
+        return super unless scope
 
-        @scope.respond_to?(meth, priv)
+        scope.respond_to?(meth, priv)
+      end
+
+      def inspect
+        "#<#{self.class.class_name} \n  scope = #{scope}\n  inner = #{inner}> "
       end
 
       def set(name, *args, **opts, &block)
