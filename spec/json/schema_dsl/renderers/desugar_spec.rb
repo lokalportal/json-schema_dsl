@@ -2,7 +2,7 @@
 
 describe JSON::SchemaDsl::Renderers::Desugar do
   describe '.visit' do
-    subject { described_class.visit(input) }
+    subject { described_class.new(nil).visit(input) }
 
     context 'it desugars nullable' do
       let(:input) { { type: :string, nullable: true } }

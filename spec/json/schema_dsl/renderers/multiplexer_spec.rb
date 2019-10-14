@@ -2,7 +2,7 @@
 
 describe JSON::SchemaDsl::Renderers::Multiplexer do
   describe '.visit' do
-    subject { described_class.visit(input) }
+    subject { described_class.new(nil).visit(input) }
 
     context 'when there is no multiplexer keyword' do
       let(:input) { { type: :string } }

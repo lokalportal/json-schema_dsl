@@ -2,7 +2,7 @@
 
 describe JSON::SchemaDsl::Renderers::Alias do
   describe '.visit' do
-    subject { described_class.visit(input) }
+    subject { described_class.new(nil).visit(input) }
 
     context 'with a ref' do
       let(:input) { { ref: 2 } }

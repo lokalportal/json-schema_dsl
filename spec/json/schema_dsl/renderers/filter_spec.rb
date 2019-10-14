@@ -2,7 +2,7 @@
 
 describe JSON::SchemaDsl::Renderers::Filter do
   describe '.visit' do
-    subject { described_class.visit(input) }
+    subject { described_class.new(nil).visit(input) }
 
     context 'when there are no things to filter' do
       let(:input) { { type: :string } }
