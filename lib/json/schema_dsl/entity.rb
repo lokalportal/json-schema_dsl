@@ -39,6 +39,7 @@ module JSON
       attribute?(:ref,         Types::String)
       attribute?(:definitions, Types::String)
 
+      delegate :as_json, to: :to_h
       def to_h
         super.transform_values do |v|
           is_array = v.respond_to?(:each)
@@ -56,10 +57,6 @@ module JSON
 
       def render
         ::JSON::SchemaDsl::Renderer.new(self).render
-      end
-
-      def as_json
-        render.as_json
       end
     end
   end
