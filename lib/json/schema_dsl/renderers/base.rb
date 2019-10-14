@@ -4,18 +4,21 @@ module JSON
   module SchemaDsl
     module Renderers
       class Base
-        class << self
-          def traverse(entity)
-            entity.transform_values { |v| step(v) }
-          end
+        attr_reader :scope
+        def initialize(scope)
+          @scope = scope
+        end
 
-          def step(value)
-            case value
-            when ::Array
-              value.first.is_a?(Hash) ? value.map { |v| visit(v) } : value
-            when Hash then visit(value)
-            else value
-            end
+        def traverse(entity)
+          entity.transform_values { |v| step(v) }
+        end
+
+        def step(value)
+          case value
+          when ::Array
+            value.first.is_a?(Hash) ? value.map { |v| visit(v) } : value
+          when Hash then visit(value)
+          else value
           end
         end
       end

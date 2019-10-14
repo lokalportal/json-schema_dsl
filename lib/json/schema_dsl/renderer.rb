@@ -7,10 +7,11 @@ end
 module JSON
   module SchemaDsl
     class Renderer
-      attr_reader :entity
+      attr_reader :entity, :scope
 
-      def initialize(entity)
+      def initialize(entity, scope = nil)
         @entity = entity.to_h
+        @scope = scope
       end
 
       def self.render(entity)
@@ -18,7 +19,9 @@ module JSON
       end
 
       def render
-        render_chain.inject(entity) { |structure, renderer| renderer.visit(structure) }
+        render_chain.inject(entity) do |structure, renderer|
+          renderer.new(scope).visit(structure)
+        end
       end
 
       private
