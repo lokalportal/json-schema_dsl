@@ -7,6 +7,8 @@ module JSON
         attr_accessor :inner_class
 
         def [](klass)
+          raise ArgumentError, "#{klass} is not a struct." unless klass < Dry::Struct
+
           registered_builders[klass] ||= klass.builder
         end
 
@@ -23,7 +25,11 @@ module JSON
         end
 
         def add_defaults_for(type, defaults)
-          type_defaults[type].merge!(defaults)
+          if type_defaults[type].empty?
+            type_defaults[type] = type_defaults[type].merge(defaults)
+          else
+            type_defaults[type].merge!(defaults)
+          end
         end
 
         def build(name = nil, scope: nil, **attributes, &block)
@@ -85,8 +91,12 @@ module JSON
       end
 
       def update(type, *args)
-        args = args.first if args.count == 1
-        @inner = inner.update(type, *args)
+        args = args.first if args.count == 1 && args.is_a?(::Array)
+        @inner = if args.is_a?(::Array)
+                   inner.update(type, *args)
+                 else
+                   inner.update(type, args)
+                 end
       end
 
       def build_struct(type, name = nil, **attributes, &block)
@@ -114,10 +124,18 @@ module JSON
       end
 
       def set(name, *args, **opts, &block)
-        return inner.send(name) if args.empty? && opts.empty? && block.nil?
+        args = extract_args(name, args, opts, &block)
+        return inner.send(name) unless args
 
-        args = build_struct(Object, **opts, &block) if opts.present? || !block.nil?
         @inner = update(name, args)
+      end
+
+      def extract_args(name, args, opts, &block)
+        if block.present? || !inner.class.has_attribute?(name) || opts[:type].present?
+          return build_struct(Object, **opts, &block)
+        end
+
+        args.presence || opts.presence
       end
 
       def add_child(child)
