@@ -4,7 +4,7 @@ describe JSON::SchemaDsl::Renderer do
   include JSON::SchemaDsl
 
   describe '.render' do
-    subject { described_class.render(input) }
+    subject(:rendered) { described_class.render(input) }
 
     shared_examples 'as a nullable entity' do
       %i[null nullable].each do |key|
@@ -16,7 +16,7 @@ describe JSON::SchemaDsl::Renderer do
       end
     end
 
-    context 'given a complex object' do
+    context 'with a complex object' do
       let(:input) do
         object :jeff do
           string :james_name, nullable: true, required: true
@@ -44,11 +44,11 @@ describe JSON::SchemaDsl::Renderer do
       it_behaves_like 'as a nullable entity'
 
       it 'is rendered correctly' do
-        expect(subject.as_json).to eq(expected.as_json)
+        expect(rendered.as_json).to eq(expected.as_json)
       end
     end
 
-    context 'given a complex array' do
+    context 'with a complex array' do
       let(:input) do
         array :cars do
           items type: :object do
@@ -117,31 +117,7 @@ describe JSON::SchemaDsl::Renderer do
       it_behaves_like 'as a nullable entity'
 
       it 'is rendered correctly' do
-        expect(subject.as_json).to eq(expected.as_json)
-      end
-    end
-
-    context 'with a multiplexed item field' do
-      let(:input2) do
-        object additional_properties: false do
-          array :objects do
-            items do
-              any_of(%w[foo bar baz].map { |w| object { string :name, enum: [w] } })
-            end
-          end
-        end
-      end
-
-      let(:input) do
-        object do
-          array :cars do
-            items do
-              object additional_properties: false do
-                string :jeff
-              end
-            end
-          end
-        end
+        expect(rendered.as_json).to eq(expected.as_json)
       end
     end
   end

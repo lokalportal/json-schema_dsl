@@ -2,13 +2,13 @@
 
 describe JSON::SchemaDsl::Renderers::Alias do
   describe '.visit' do
-    subject { described_class.new(nil).visit(input) }
+    subject(:aliased) { described_class.new(nil).visit(input) }
 
     context 'with a ref' do
       let(:input) { { ref: 2 } }
 
       it 'applies the registered aliases' do
-        is_expected.to include("$ref": 2)
+        expect(aliased).to include("$ref": 2)
       end
     end
 
@@ -16,32 +16,32 @@ describe JSON::SchemaDsl::Renderers::Alias do
       let(:input) { { pattern_properties: ['^james'] } }
 
       it 'turn keys to camelcase' do
-        is_expected.to include(patternProperties: ['^james'])
+        expect(aliased).to include(patternProperties: ['^james'])
       end
 
-      context 'that are nested' do
-        context 'in a Hash' do
+      context 'when nested' do
+        context 'when in a Hash' do
           let(:input) { { properties: { data: { created_at: { type: 'string' } } } } }
 
           it 'does camelize the key' do
-            expect(subject.dig(:properties, :data, :createdAt)).to eq(type: 'string')
+            expect(aliased.dig(:properties, :data, :createdAt)).to eq(type: 'string')
           end
         end
 
-        context 'in an Array' do
+        context 'when in an Array' do
           let(:input) { { items: [{ pattern_properties: ['^james'] }] } }
 
           it 'does camelize the key' do
-            expect(subject[:items].first).to include(patternProperties: ['^james'])
+            expect(aliased[:items].first).to include(patternProperties: ['^james'])
           end
         end
       end
 
-      context 'that are names' do
+      context 'when that are names' do
         let(:input) { { properties: { a_name: { type: 'null' } } } }
 
         it 'does not downcase the name' do
-          expect(subject.dig(:properties, :a_name)).to eq(type: 'null')
+          expect(aliased.dig(:properties, :a_name)).to eq(type: 'null')
         end
       end
     end

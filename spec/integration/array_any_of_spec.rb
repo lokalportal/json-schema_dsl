@@ -3,7 +3,7 @@
 describe 'Array of any ofs' do
   include JSON::SchemaDsl
 
-  subject do
+  subject(:complex_array) do
     object do
       array :an_array do
         items do
@@ -15,6 +15,7 @@ describe 'Array of any ofs' do
       end
     end
   end
+
   let(:expected_json) do
     {
       type: 'object',
@@ -48,6 +49,6 @@ describe 'Array of any ofs' do
   end
 
   it 'matches' do
-    expect(subject.render.as_json).to eq(expected_json.as_json)
+    expect(complex_array.render.as_json).to eq(expected_json.as_json)
   end
 end

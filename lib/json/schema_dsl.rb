@@ -19,6 +19,7 @@ require 'json/schema_dsl/builder'
 require 'json/schema_dsl/renderer'
 
 module JSON
+  # This module provides the base that it includes with the methods to build new json-schemas.
   module SchemaDsl
     class Error < StandardError; end
 

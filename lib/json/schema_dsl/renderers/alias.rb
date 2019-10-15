@@ -3,11 +3,15 @@
 module JSON
   module SchemaDsl
     module Renderers
+      # Aliases certain attributes and camel-cases all others.
+      # The only exception are property names which are set by the user and
+      # will not be camel-cased.
       class Alias < Base
         ALIASES = {
           'ref' => '$ref'
         }.freeze
 
+        # Camel-case and/or alias the attribute names of the given structure.
         def visit(entity)
           traverse(entity
             .transform_keys { |key| ALIASES[key.to_s]&.to_sym || key }

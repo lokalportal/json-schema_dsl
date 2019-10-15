@@ -2,10 +2,10 @@
 
 describe JSON::SchemaDsl::Builder do
   include ::JSON::SchemaDsl
-  after(:each) { described_class.type_defaults.clear }
+  after { described_class.type_defaults.clear }
 
   context 'when type defaults are given' do
-    before(:each) { described_class.type_defaults.merge!(object: { additional_properties: false }) }
+    before { described_class.type_defaults.merge!(object: { additional_properties: false }) }
 
     it 'applies the defaults' do
       expect(object.additional_properties).to be false

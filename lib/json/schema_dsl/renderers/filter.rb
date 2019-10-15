@@ -3,9 +3,13 @@
 module JSON
   module SchemaDsl
     module Renderers
+      # Filters out properties that are either used internally only or
+      # which are redundant (I.e. set to nil).
       class Filter < Base
         INVISIBLES = %w[Children Nullable Name].freeze
 
+        # Filters out properties that are either used internally only or
+        # which are redundant (I.e. set to nil).
         def visit(entity)
           traverse(filter(entity))
         end

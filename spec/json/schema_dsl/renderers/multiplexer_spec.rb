@@ -2,7 +2,7 @@
 
 describe JSON::SchemaDsl::Renderers::Multiplexer do
   describe '.visit' do
-    subject { described_class.new(nil).visit(input) }
+    subject(:boxed) { described_class.new(nil).visit(input) }
 
     context 'when there is no multiplexer keyword' do
       let(:input) { { type: :string } }
@@ -15,10 +15,10 @@ describe JSON::SchemaDsl::Renderers::Multiplexer do
       let(:any_of) { [{ type: 'null' }] }
 
       it { is_expected.to include(type: 'entity') }
-      it { expect(subject[:any_of]).to include(type: :string) }
-      it { expect(subject[:any_of]).to include(type: 'null') }
-      it { expect(subject[:any_of].last).to eq(type: :string) }
-      it { expect(subject[:any_of].last[:any_of]).not_to be_present }
+      it { expect(boxed[:any_of]).to include(type: :string) }
+      it { expect(boxed[:any_of]).to include(type: 'null') }
+      it { expect(boxed[:any_of].last).to eq(type: :string) }
+      it { expect(boxed[:any_of].last[:any_of]).not_to be_present }
     end
   end
 end
