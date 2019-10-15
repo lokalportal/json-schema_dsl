@@ -23,9 +23,16 @@ module JSON
         end
 
         def container?(entity)
-          cleaned_up = Renderers::Filter.new(scope).visit(entity)
+          cleaned_up = clean_up(entity)
 
           cleaned_up[:type].to_s == 'object' && cleaned_up.keys.count <= 1
+        end
+
+        def clean_up(entity)
+          defaults = ::JSON::SchemaDsl.type_defaults[entity[:type].to_sym]
+          (entity.to_a - defaults.to_a).to_h.yield_self do |without_defaults|
+            Renderers::Filter.new(scope).visit(without_defaults)
+          end
         end
       end
     end
