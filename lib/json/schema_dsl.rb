@@ -72,6 +72,12 @@ module JSON
         end
       end
 
+      def reset!
+        reset_registered_renderers!
+        reset_type_defaults!
+        reset_schema_dsl!
+      end
+
       def type_method_name(type)
         type.type_method_name || 'entity'
       end
