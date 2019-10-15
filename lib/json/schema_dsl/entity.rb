@@ -42,7 +42,7 @@ module JSON
       delegate :as_json, to: :to_h
       def to_h
         super.transform_values do |v|
-          is_array = v.respond_to?(:each)
+          is_array = v.is_a?(::Array)
           if (is_array ? v.first : v).respond_to?(:to_h)
             is_array ? v.map(&:to_h) : v.to_h
           else
