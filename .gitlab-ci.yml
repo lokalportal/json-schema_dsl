@@ -3,6 +3,9 @@
 # https://hub.docker.com/r/library/ruby/tags/
 image: "ruby:2.6"
 
+include:
+  - template: Code-Quality.gitlab-ci.yml
+
 # Cache gems in between builds
 cache:
   paths:
@@ -25,17 +28,3 @@ rubocop:
 rspec:
   script:
     - bundle exec rspec spec
-
-codequality:
-  image: docker:latest
-  variables:
-    DOCKER_DRIVER: overlay
-  services:
-    - docker:dind
-  before_script:
-  script:
-    - docker pull codeclimate/codeclimate
-    - docker run --env CODECLIMATE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate init
-    - docker run --env CODECLIMATE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate analyze -f json > codeclimate.json
-  artifacts:
-    paths: [codeclimate.json]
