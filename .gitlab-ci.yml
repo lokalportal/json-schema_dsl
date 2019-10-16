@@ -1,7 +1,7 @@
 # This file is a template, and might need editing before it works on your project.
 # Official language image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/ruby/tags/
-image: "ruby:2.5"
+image: "ruby:2.6"
 
 # Pick zero or more services to be used on all builds.
 # Only needed when using a docker container to run your tests in.
@@ -22,6 +22,7 @@ before_script:
   - ruby -v  # Print out ruby version for debugging
   # Uncomment next line if your rails app needs a JS runtime:
   # - apt-get update -q && apt-get install nodejs -yqq
+  - gem install bundler -v '2.0.2'
   - bundle install -j $(nproc) --path vendor  # Install dependencies into ./vendor/ruby
 
 # Optional - Delete if not using `rubocop`
