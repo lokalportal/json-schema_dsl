@@ -20,7 +20,7 @@ module JSON
         # @param [Class] klass A class that is a subclass of {JSON::SchemaDsl::Entity}.
         # @return A new builder class that subclasses {JSON::SchemaDsl::Builder}
         def [](klass)
-          raise ArgumentError, "#{klass} is not a struct." unless klass < Dry::Struct
+          raise ArgumentError, "#{klass} is not a struct." unless klass < AstNode
 
           registered_builders[klass] ||= klass.builder
         end

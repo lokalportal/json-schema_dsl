@@ -9,27 +9,12 @@ module JSON
     #
     # Internally it is used as the superclass of all other types.
     class Entity < Dry::Struct
+      include AstNode
+
       class << self
-        # @return [String] The type that will be used in I.E. `type: 'object'` attributes.
-        #   Also used to give names to the dsl and builder methods.
-        def infer_type
-          type = name.split('::').last.underscore
-          type == 'entity' ? nil : type
-        end
-
-        # @method! type_method_name
-        #   Override this method to set the name of the dsl method for this type.
-        alias type_method_name infer_type
-
         # nodoc
         def required_type
           (Types::Bool | Types::Coercible::Array.of(Types::Coercible::String).default { [] })
-        end
-
-        # Override this to set a custom builder for your type.
-        # @return [Class] A new builder class for this type.
-        def builder
-          ::JSON::SchemaDsl::Builder.define_builder(self)
         end
       end
 
@@ -49,7 +34,6 @@ module JSON
       attribute?(:ref,         Types::String)
       attribute?(:definitions, Types::String)
 
-      delegate :as_json, to: :to_h
       # @return [Hash<Symbol, Object>] Returns this entity as a hash and all children and
       #   properties as simple values. This structure is used to render the eventual
       #   schema by the renderer.
@@ -64,21 +48,7 @@ module JSON
           end
         end
       end
-
-      # @param [Symbol] attribute_name The name of the attribute to update.
-      # @param [Object] value The value that will be set for the attribute.
-      # @return [Entity] Since entities themselves are immutable, this method returns a new
-      #   entity with the attribute_name and value pair added.
-      def update(attribute_name, value = nil)
-        self.class.new(to_h.merge(attribute_name => value))
-      end
-
-      # Used to do a simple render of the entity. Since this has no sensible scope while
-      #   rendering, use Builder#render instead.
-      # @see JSON::SchemaDsl::Builder#render
-      def render
-        ::JSON::SchemaDsl::Renderer.new(self).render
-      end
+      delegate :as_json, to: :to_h
     end
   end
 end

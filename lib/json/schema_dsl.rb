@@ -9,6 +9,7 @@ require 'dry-types'
 require 'json/schema_dsl/version'
 require 'json/schema_dsl/types'
 require 'json/schema_dsl/configuration'
+require 'json/schema_dsl/ast_node'
 require 'json/schema_dsl/entity'
 
 %w[null boolean numeric integer string object array].each do |type|
