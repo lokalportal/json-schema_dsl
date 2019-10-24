@@ -47,4 +47,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop', '0.74.0'
   spec.add_development_dependency 'rubocop-rspec', '1.36.0'
   spec.add_development_dependency 'spring'
+  spec.add_development_dependency 'stackprof'
 end
