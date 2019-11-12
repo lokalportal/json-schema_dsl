@@ -185,6 +185,17 @@ Will generate
 }
 ```
 
+To just build schemas on the fly without setting up a new class, use
+`JSON::SchemaDsl.proxy` which will return a new proxy-builder that enables
+access to the DSL.
+
+```ruby
+JSON::SchemaDsl.proxy.object do
+  string :author
+  string :title
+end
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

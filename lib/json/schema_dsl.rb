@@ -18,6 +18,7 @@ end
 
 require 'json/schema_dsl/builder'
 require 'json/schema_dsl/renderer'
+require 'json/schema_dsl/proxy'
 
 module JSON
   # This module provides the base that it includes with the methods to build new json-schemas.
@@ -66,8 +67,7 @@ module JSON
       # Resets schema_dsl back to default. Removes all dsl methods and redefines
       #   them with the default types.
       def reset_schema_dsl!
-        (registered_types.map { |t| type_method_name(t).to_sym } & instance_methods)
-          .each { |tm| remove_method tm }
+        type_methods.each { |tm| remove_method tm }
         @registered_types = DEFAULT_TYPES.dup
         define_schema_dsl!
       end
@@ -92,6 +92,16 @@ module JSON
         reset_registered_renderers!
         reset_type_defaults!
         reset_schema_dsl!
+      end
+
+      # @return [JSON::SchemaDsl::Proxy] a new proxy to build schemas.
+      def proxy
+        ::JSON::SchemaDsl::Proxy.new
+      end
+
+      # @return [Array<Symbol>] An array of all type methods
+      def type_methods
+        registered_types.map { |t| type_method_name(t).to_sym } & instance_methods
       end
 
       # @param [Class] type The class for which a method will be defined.
